@@ -1,0 +1,74 @@
+
+/*
+  # Create Food Bank Management Schema
+
+  1. New Tables
+    - `food_items`
+      - `id` (uuid, primary key)
+      - `name` (text) - Name of the food item
+      - `category` (text) - Category (e.g., "Canned Goods", "Fresh Produce")
+      - `current_stock` (integer) - Current quantity in stock
+      - `minimum_threshold` (integer) - Minimum quantity before showing as low/critical
+      - `is_urgent` (boolean) - Manual urgent flag set by admins
+      - `created_at` (timestamptz) - When item was added
+      - `updated_at` (timestamptz) - Last update timestamp
+  
+  2. Security
+    - Enable RLS on `food_items` table
+    - Add policy for public users to read all food items
+    - Add policy for authenticated users (admins) to insert items
+    - Add policy for authenticated users (admins) to update items
+    - Add policy for authenticated users (admins) to delete items
+*/
+
+CREATE TABLE IF NOT EXISTS food_items (
+  id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+  name text NOT NULL,
+  category text NOT NULL,
+  current_stock integer NOT NULL DEFAULT 0,
+  minimum_threshold integer NOT NULL DEFAULT 10,
+  is_urgent boolean DEFAULT false,
+  created_at timestamptz DEFAULT now(),
+  updated_at timestamptz DEFAULT now()
+);
+
+ALTER TABLE food_items ENABLE ROW LEVEL SECURITY;
+
+CREATE POLICY "Anyone can view food items"
+  ON food_items
+  FOR SELECT
+  USING (true);
+
+CREATE POLICY "Authenticated users can insert food items"
+  ON food_items
+  FOR INSERT
+  TO authenticated
+  WITH CHECK (true);
+
+CREATE POLICY "Authenticated users can update food items"
+  ON food_items
+  FOR UPDATE
+  TO authenticated
+  USING (true)
+  WITH CHECK (true);
+
+CREATE POLICY "Authenticated users can delete food items"
+  ON food_items
+  FOR DELETE
+  TO authenticated
+  USING (true);
+
+-- Insert sample data
+INSERT INTO food_items (name, category, current_stock, minimum_threshold, is_urgent)
+VALUES
+  ('Canned Beans', 'Canned Goods', 5, 20, false),
+  ('Rice (1lb bags)', 'Grains', 15, 30, false),
+  ('Pasta', 'Grains', 8, 25, false),
+  ('Canned Soup', 'Canned Goods', 25, 20, false),
+  ('Peanut Butter', 'Protein', 3, 15, true),
+  ('Canned Vegetables', 'Canned Goods', 12, 30, false),
+  ('Cereal', 'Breakfast', 18, 20, false),
+  ('Canned Fruit', 'Canned Goods', 6, 20, false),
+  ('Tomato Sauce', 'Canned Goods', 30, 25, false),
+  ('Milk (Shelf-stable)', 'Dairy', 4, 15, false)
+ON CONFLICT DO NOTHING;
