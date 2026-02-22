@@ -213,7 +213,7 @@ useEffect(() => {
         <header className="bg-white shadow-sm border-b sticky top-0 z-40">
           <div className="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
             <h1 className="text-2xl font-bold cursor-pointer text-[#1e3a8a]" onClick={() => setView('home')}>
-              Community Food Bank
+              FoodBridge
             </h1>
             <nav className="flex gap-8 font-bold text-sm uppercase tracking-wider text-gray-600">
               <button onClick={() => setView('home')} className={`hover:text-blue-800 transition ${view === 'home' ? 'text-[#1e3a8a] border-b-2 border-[#f26522]' : ''}`}>Home</button>
